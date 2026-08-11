@@ -1,0 +1,11 @@
+{
+  "题目ID": "2827",
+  "任务名称": "开发者沙箱LimitRange与ResourceQuota预检表",
+  "任务概要": "沙箱平台准备调整资源默认值和配额。任务修正三份Kubernetes对象，并依据输入规则检查十份申请在提交前需要补齐或修改的字段。",
+  "任务prompt‼️": "输入包提供十份Pod或PVC申请、现有用量、故障策略和资源规则。请修正Namespace、LimitRange与ResourceQuota，并用kubectl客户端模式检查对象结构。再逐字段补齐申请中的CPU与内存默认值，计算min、max、limit与request比值及七项配额增量，形成提交前预检表。结果使用通过、超出LimitRange和超出ResourceQuota三类预检结论，不得写成API服务器已经准入或拒绝工作负载，也不得实际创建对象。",
+  "关键动作": "修正Namespace、LimitRange和ResourceQuota\n用kubectl客户端模式生成并核对对象\n逐容器补齐四个资源字段并保留来源\n检查min、max和limit与request比值\n根据现有用量计算七项配额增量\n把结论记录为提交前预检而非准入结果",
+  "评分表（直接输入内容或使用txt文档）‼️": "总分100分。\n\n1.三份Kubernetes对象的身份和资源规则正确（20分）\n2.逐字段默认值及来源记录正确（20分）\n3.LimitRange规则检查正确（20分）\n4.ResourceQuota增量和累计用量计算正确（25分）\n5.结果没有API服务器准入或拒绝的运行期结论（15分）",
+  "本项任务的环境依赖": "主软件为kubectl1.32.6，使用Windows11原生PowerShell运行kubectl.exe。复现过程只执行客户端版本查询和dry-run生成命令，不读取用户kubeconfig、不连接集群，也不创建Kubernetes对象。\n\n辅助工具为Ruby3.3及其标准库。kubectl与Kubernetes按ApacheLicense2.0使用，Ruby沿用原项目许可。\n\n安装锁定工具时可以联网；正式复现只读取输入包和本地工作目录，不访问API服务器或外部服务。读写权限限定为输入目录只读、结果目录可写。\n\n主要风险是漏补同一resources映射中的单个字段、按quantity字符串外观误判等值、把超出规则的申请计入累计用量，或把离线预检写成API服务器准入结果。",
+  "相关专业软件的关键步骤": "1.用kubectl.exe客户端模式生成Namespace与ResourceQuota对象\n2.核对LimitRange的defaultRequest、default、min、max和比值\n3.按文件顺序读取十份申请并逐字段补齐默认值\n4.计算每份申请的LimitRange规则和配额增量\n5.输出提交前预检表并确认没有创建或准入成功的表述",
+  "涉及的专业软件": "Kubernetes"
+}

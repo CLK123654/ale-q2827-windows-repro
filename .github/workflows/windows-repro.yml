@@ -1,0 +1,38 @@
+name: q2827-windows-repro
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  reproduce:
+    runs-on: windows-2025
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+      - uses: azure/setup-kubectl@v4
+        with:
+          version: v1.32.6
+      - name: Verify four attachments
+        shell: pwsh
+        run: python ./qa/verify_attachments.py
+      - name: Rebuild and compare q2827
+        shell: pwsh
+        run: ./qa/q2827_reproduce.ps1
+      - name: Upload independent evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: q2827-windows-evidence
+          path: evidence/**
+          if-no-files-found: error

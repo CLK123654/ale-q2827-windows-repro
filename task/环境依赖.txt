@@ -1,0 +1,7 @@
+主软件为kubectl1.32.6，使用Windows11原生PowerShell运行kubectl.exe。复现过程只执行客户端版本查询和dry-run生成命令，不读取用户kubeconfig、不连接集群，也不创建Kubernetes对象。
+
+辅助工具为Ruby3.3及其标准库。kubectl与Kubernetes按ApacheLicense2.0使用，Ruby沿用原项目许可。
+
+安装锁定工具时可以联网；正式复现只读取输入包和本地工作目录，不访问API服务器或外部服务。读写权限限定为输入目录只读、结果目录可写。
+
+主要风险是漏补同一resources映射中的单个字段、按quantity字符串外观误判等值、把超出规则的申请计入累计用量，或把离线预检写成API服务器准入结果。

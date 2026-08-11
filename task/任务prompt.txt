@@ -1,0 +1,1 @@
+输入包提供十份Pod或PVC申请、现有用量、故障策略和资源规则。请修正Namespace、LimitRange与ResourceQuota，并用kubectl客户端模式检查对象结构。再逐字段补齐申请中的CPU与内存默认值，计算min、max、limit与request比值及七项配额增量，形成提交前预检表。结果使用通过、超出LimitRange和超出ResourceQuota三类预检结论，不得写成API服务器已经准入或拒绝工作负载，也不得实际创建对象。
