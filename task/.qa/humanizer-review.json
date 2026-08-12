@@ -1,0 +1,48 @@
+{
+  "skill": "humanizer-zh",
+  "result": "PASS",
+  "reviewed_scopes": [
+    "任务名称",
+    "任务概要",
+    "任务prompt",
+    "关键动作",
+    "评分表",
+    "环境依赖",
+    "软件步骤",
+    "输入材料中的自然语言",
+    "Reference中的用户可见文字",
+    "关键标准答案工作簿全部自然语言",
+    "任务规格工作簿全部自然语言"
+  ],
+  "scores": {
+    "直接性": 9,
+    "节奏": 9,
+    "信任度": 9,
+    "真实性": 10,
+    "精炼度": 9,
+    "total": 46
+  },
+  "minimum_total": 45,
+  "notes": [
+    "保留原有沙箱资源预检业务，没有为清理语言而改换主题。",
+    "Prompt从平台组调整默认值和配额的实际事项切入，四段分别说明材料、资源对象、累计规则和现场接续。",
+    "Reference只保留策略清单、预检明细、用量结果和使用说明，制题脚本与固定判定摘要已经移出业务交付。",
+    "任务规格逐项对应Kubernetes资源对象、LimitRange边界、ResourceQuota累计和平台值班的后续动作。",
+    "人工复读未发现宣传腔、伪引用、软件能力越界或输入到结果之间的推理断点。"
+  ],
+  "reviewed_artifacts_sha256": {
+    "任务名称.txt": "fdb6e8baa965cef69c73a16385fdfa512ab88b7f3330227a3440cbb5dfb38cd7",
+    "任务概要.txt": "5de30d6a267f01bd76a3a7cf93f30d13ec6f5d7914ebe5c85da3c2f9fa4b0786",
+    "任务prompt.txt": "8eba84322b0682ceaa40181a4e6f74c82bd639437cab3779ee2090b75a5896e0",
+    "关键动作.txt": "31c98d333ee84ed9b545f5ce0cfc03431441ed5985f988483946df9524dc1e3a",
+    "评分表.txt": "df6e27294ee8344f6b5887f5e49b2b924198f65e91d3017766b89b55c52cc67c",
+    "环境依赖.txt": "b00bb7d64dfe1e5d8271bdd9313eb4d88f07b4ec547b2eabbe068abbbf8eeecc",
+    "相关专业软件的关键步骤.txt": "1bf025a27f7638c53cb5dd34f6ccddc922488947f84c6cbd3a5fbd62900c4af6",
+    "task_fields.json": "467ac3f402c3e51b60b33c0037452b07601cd066ee7313c9957c6dffd5ddd519",
+    "输入数据包.zip": "899b1205209fc60d2d6ab936cefac3f2ee3abea7a7756dfc2aa815e851336d62",
+    "reference.zip": "ec0963c6aec6c45df68573e321da89794b50d3c071d8d17b28bdf57945ec2861",
+    "关键标准答案.xlsx": "7efc7c862b0713537dc12587446cd690375f2d6ef4c5d51932f3015732a3b428",
+    "任务规格转化.xlsx": "0d7ca82d826d40cdce24008262bb02c1f5da75345d661e4daffb342cc087227b",
+    "ALE-专家数据作业表_q2827.csv": "6d20afdf8b615312a47c8f78cd7de681d86bce1a5ed53fb8fb26809db25006b3"
+  }
+}
