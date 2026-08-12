@@ -1,7 +1,97 @@
-总分100分。
+总分100分
 
-1.三份Kubernetes对象的身份和资源规则正确（20分）
-2.逐字段默认值及来源记录正确（20分）
-3.LimitRange规则检查正确（20分）
-4.ResourceQuota增量和累计用量计算正确（25分）
-5.结果没有API服务器准入或拒绝的运行期结论（15分）
+1. 主要交付物完整
+分值：10分
+标准答案：output下包含三份Kubernetes策略对象、申请预检表、容器字段表、配额轨迹、最终用量、预检摘要和使用说明，文件均可读取。
+关键字段：output/policy、output/results、output/README.md。
+容差：路径精确匹配，JSON键序和CSV行序可以变化。
+失败边界：任一主要交付物缺失、损坏或无法解析。
+可观察证据：交付目录和各交付文件内容。
+客观硬性标准：声明的策略对象和结果文件全部存在，YAML、JSON与CSV均能解析。
+阈值：主要交付物缺失数和不可读文件数均为0。
+优先级：Gate项
+所属层级：L1任务指令遵循层
+
+2. 业务输入全部使用
+分值：10分
+标准答案：broken_policy.yaml用于修正策略对象，precheck_contract.json提供默认值、边界和配额，existing_usage.json提供起始用量，requests目录中的申请全部进入预检表。
+关键字段：namespace、container_defaults、container_min、container_max、max_limit_request_ratio、quota、request_id。
+容差：按request_id和字段名关联，输入文件顺序不参与比较。
+失败边界：任一主要输入没有下游结果，或申请遗漏、重复。
+可观察证据：四类输入、三份策略对象、normalized_containers.csv、request_precheck.csv和quota_trajectory.csv。
+客观硬性标准：每个主要输入都有可定位的输出字段，申请主键集合与预检表相等。
+阈值：未使用输入数、遗漏申请数和重复申请数均为0。
+优先级：Gate项
+所属层级：L3输入数据导入与完整性层
+
+3. Namespace与资源策略对象
+分值：14分
+标准答案：Namespace名称与合同一致；LimitRange包含defaultRequest、default、min、max和limit与request比值；ResourceQuota包含合同声明的七项hard资源。
+关键字段：metadata.name、metadata.namespace、spec.limits、spec.hard。
+容差：YAML键序和等价quantity写法可以变化，资源集合与数值按Kubernetes quantity语义比较。
+失败边界：对象身份错误、资源字段缺失、多出未声明资源或quantity不等价。
+可观察证据：precheck_contract.json和output/policy下三份YAML。
+客观硬性标准：对象身份、LimitRange规则和ResourceQuota资源集合逐项对应合同。
+阈值：对象字段偏差数为0。
+优先级：高权重项
+所属层级：L7产物结构或Schema或专业对象层
+
+4. 容器默认字段与来源
+分值：14分
+标准答案：每个容器保留已填写的resources字段，只对缺失字段使用合同中的requests.cpu、requests.memory、limits.cpu和limits.memory默认值，并记录每个字段的来源。
+关键字段：request_id、container_name、requests_cpu、requests_memory、limits_cpu、limits_memory、source字段。
+容差：Kubernetes quantity按等价值比较，来源枚举精确匹配。
+失败边界：覆盖原值、漏补字段、整组替换resources或来源标记错误。
+可观察证据：原申请、precheck_contract.json和normalized_containers.csv。
+客观硬性标准：所有容器的四个资源字段完整，原值与默认值来源可逐字段追溯。
+阈值：缺失字段数、错误覆盖数和错误来源数均为0。
+优先级：高权重项
+所属层级：L5多源关联与字段一致性层
+
+5. LimitRange边界判断
+分值：16分
+标准答案：对规范化后的容器检查CPU和内存的min、max以及limit与request比值，超界申请在request_precheck.csv中列出对应资源原因。
+关键字段：MIN_CPU、MIN_MEMORY、MAX_CPU、MAX_MEMORY、RATIO_CPU、RATIO_MEMORY。
+容差：quantity换算允许等价单位，边界比较结果必须一致。
+失败边界：在默认值补齐前检查、按字符串外观比较quantity、漏报或误报边界。
+可观察证据：precheck_contract.json、normalized_containers.csv和request_precheck.csv。
+客观硬性标准：每个容器的边界判断均由规范化数值计算，原因集合与越界字段一致。
+阈值：边界判断错误数和原因集合差异数均为0。
+优先级：高权重项
+所属层级：L6领域计算与专业规则层
+
+6. ResourceQuota轨迹与最终用量
+分值：18分
+标准答案：以existing_usage.json为起点，按合同顺序计算每份申请对七项配额的增量；只有当前LimitRange通过且累计用量不超hard的申请进入后续用量。
+关键字段：pods、requests.cpu、requests.memory、limits.cpu、limits.memory、persistentvolumeclaims、requests.storage。
+容差：CPU统一换算为毫核、内存和存储统一换算为合同所用单位后精确比较。
+失败边界：超界申请计入累计用量、拒绝后仍传播增量、PVC与Pod使用错误资源集合，或最终用量不能从轨迹复算。
+可观察证据：existing_usage.json、precheck_contract.json、quota_trajectory.csv和final_usage.json。
+客观硬性标准：每一步before、delta和after闭合，最终用量等于最后一条有效轨迹。
+阈值：七项资源的轨迹偏差数和最终用量偏差数均为0。
+优先级：高权重项
+所属层级：L6领域计算与专业规则层
+
+7. 申请预检结论闭合
+分值：12分
+标准答案：每个request_id只有一个提交前预检结论，结果为通过、超出LimitRange或超出ResourceQuota；结论与边界判断、配额轨迹及最终用量一致。
+关键字段：request_id、result、reason、exceeded_resources。
+容差：申请行序可以变化，按request_id集合比较，原因资源按集合比较。
+失败边界：申请无结论、结论重复、LimitRange与ResourceQuota优先关系错误，或摘要计数无法由明细复算。
+可观察证据：request_precheck.csv、quota_trajectory.csv、final_usage.json和precheck_summary.json。
+客观硬性标准：申请集合完整且唯一，明细、轨迹、最终用量和摘要四者一致。
+阈值：主键差异数、结论冲突数和摘要计数偏差数均为0。
+优先级：高权重项
+所属层级：L9跨产物一致性与可追溯层
+
+8. 客户端操作边界准确
+分值：6分
+标准答案：kubectl客户端模式生成的Namespace与ResourceQuota对象与策略对象一致，交付说明写明平台值班在现场提交并完成集群侧核查。
+关键字段：kubectl_namespace_dry_run.yaml、kubectl_quota_dry_run.yaml、README.md、result。
+容差：说明文字可以自然改写，客户端对象身份和能力边界不能变化。
+失败边界：dry-run对象与策略不一致，或遗漏现场提交和集群侧核查的责任边界。
+可观察证据：两份kubectl客户端输出、README.md和预检结果。
+客观硬性标准：客户端输出与策略对象对应，使用说明明确现场接续岗位和后续动作。
+阈值：对象身份偏差数和越界结论数均为0。
+优先级：普通项
+所属层级：L2软件或工具操作层

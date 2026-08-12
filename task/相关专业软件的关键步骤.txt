@@ -1,5 +1,5 @@
 1.用kubectl.exe客户端模式生成Namespace与ResourceQuota对象
 2.核对LimitRange的defaultRequest、default、min、max和比值
-3.按文件顺序读取十份申请并逐字段补齐默认值
-4.计算每份申请的LimitRange规则和配额增量
-5.输出提交前预检表并确认没有创建或准入成功的表述
+3.按申请顺序逐字段补齐资源默认值并保留来源
+4.计算每份申请的LimitRange边界和配额增量
+5.输出提交前预检表、用量轨迹和最终用量
